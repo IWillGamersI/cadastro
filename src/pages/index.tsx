@@ -1,44 +1,20 @@
-import { prependOnceListener } from "process";
-import { useEffect, useState } from "react";
-import ColecaoCliente from "../backend/db/ColecaoCliente";
 import Botao from "../components/Botao";
 import Fomulario from "../components/Formulario";
 import Layout from "../components/Layout";
 import Tabela from "../components/Tabela";
-import Cliente from "../core/Cliente";
-import ClienteRepositorio from "../core/ClienteRepositorio";
+import { useClientes } from "../hooks/useClientes";
 
 export default function Home() {
 
-  const repositorio: ClienteRepositorio = new ColecaoCliente()
-  
-  const [visible, setVisible] = useState< 'table' | 'form' >('table')
-  const [cliente, setCliente] = useState<Cliente>(Cliente.vazio)
-  const [clientes, setClientes] = useState<Cliente[]>([])
-   
-  useEffect(()=>{
-    repositorio.obterTodos().then(setClientes)
-  },[])
-
-  function clienteSelecionadoIndex(cliente:Cliente){
-    setCliente(cliente)
-    setVisible('form')
-
-  }
-
-  function clienteExcluidoIndex(cliente:Cliente){
-    alert(cliente.nome)
-  }
-  
-  function salvarCliente(cliente:Cliente){
-    setVisible('table')
-  }
-
-  function novoCliente(){
-    setCliente(Cliente.vazio())
-    setVisible('form')
-  }
-
+  const { selecionadoCliente, 
+          salvarCliente, 
+          addCliente,
+          excluirCliente,
+          cliente,
+          clientes,
+          tableVisible,
+          exibirTable
+        } = useClientes()
 
   return (
     <div className={`
@@ -52,19 +28,19 @@ export default function Home() {
       <Layout titulo="Cadastro Simples" >
         
         
-        {visible ==='table' ?
+        {tableVisible ?
             (<>
                 <div className="flex justify-end">
-                  <Botao onClick={novoCliente}>Novo Cliente</Botao>
+                  <Botao onClick={addCliente}>Novo Cliente</Botao>
                 </div>
                 <Tabela clientes={clientes} 
-                        clienteSelecionado={clienteSelecionadoIndex}
-                        clienteExcluido={clienteExcluidoIndex}
+                        clienteSelecionado={selecionadoCliente}
+                        clienteExcluido={excluirCliente}
                         >                      
                 </Tabela>
             </>):(
                  <Fomulario cliente={cliente}
-                            cancelado={()=>setVisible('table')}
+                            cancelado={exibirTable}
                             clienteMudou={salvarCliente}
 
                  />          

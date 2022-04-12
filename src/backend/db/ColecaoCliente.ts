@@ -14,7 +14,7 @@ export default class ColecaoCliente implements ClienteRepositorio{
         fromFirestore(snapshot: firebase.firestore.QueryDocumentSnapshot 
                         ,options: firebase.firestore.SnapshotOptions){
             const dados = snapshot.data(options)
-            return new Cliente(dados.nome, dados.idade, dados.id)
+            return new Cliente( dados.nome,dados.idade,snapshot.id)
         }
     }
     
